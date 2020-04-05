@@ -17,6 +17,8 @@ amqp.connect(
         durable: true,
       });
 
+      channel.prefetch(1);
+
       console.log(
         " [*] Waiting for messages in %s. To exit press CTRL+C",
         queue

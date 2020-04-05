@@ -11,10 +11,10 @@ amqp.connect(
         throw error1;
       }
 
-      var queue = "hello";
+      var queue = "task_queue";
 
       channel.assertQueue(queue, {
-        durable: false,
+        durable: true,
       });
 
       console.log(
@@ -25,7 +25,12 @@ amqp.connect(
       channel.consume(
         queue,
         function (msg) {
+          var secs = msg.content.toString().split(".").length - 1;
+
           console.log(" [x] Received %s", msg.content.toString());
+          setTimeout(function () {
+            console.log(" [x] Done");
+          }, secs * 1000);
         },
         {
           noAck: true,

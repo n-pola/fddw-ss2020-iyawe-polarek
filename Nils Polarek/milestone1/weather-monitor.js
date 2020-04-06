@@ -1,4 +1,13 @@
 var amqp = require("amqplib/callback_api");
+const axios = require("axios");
+
+const here = axios.create({
+  baseURL: "https://geocode.search.hereapi.com/v1/",
+});
+
+const weather = axios.create({
+  baseURL: "https://weather.ls.hereapi.com/weather/1.0/",
+});
 
 amqp.connect(
   "amqp://dtnuecqi:gGpHnyj_8HKgJC_w2okKeZZJmXxkEnsn@bee.rmq.cloudamqp.com/dtnuecqi",
@@ -37,6 +46,8 @@ amqp.connect(
                 msg.fields.routingKey,
                 msg.content.toString()
               );
+              let msgJSON = JSON.parse(msg.content.toString());
+              var forecast = getForecast(msgJSON.location);
             },
             {
               noAck: true,
@@ -47,3 +58,58 @@ amqp.connect(
     });
   }
 );
+
+function getLocation(locationName) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      locationName = locationName.replace(" ", "+");
+      locationName = locationName.replace(",", "%2C");
+
+      here
+        .get(
+          "/geocode?q=" +
+            locationName +
+            "&apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg"
+        )
+        .then(function (response) {
+          console.log(response.data);
+          resolve(response.data);
+        })
+        .catch(function (error) {
+          // handle error
+          console.log(error);
+        })
+        .then(function () {
+          // always executed
+        });
+    } catch (error) {
+      console.log(error);
+      reject(error);
+    }
+  });
+}
+
+async function getForecast(locationName) {
+  var longlang = await getLocation(locationName);
+  console.log(longlang.items[0].position);
+
+  var forecast = await weather
+    .get(
+      "report.json?apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg&product=forecast_7days_simple&latitude=" +
+        longlang.items[0].position.lat +
+        "&longitude=" +
+        longlang.items[0].position.lng +
+        ""
+    )
+    .then(function (response) {
+      console.log(response.data.dailyForecasts.forecastLocation);
+      return response.data;
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error);
+    })
+    .then(function () {
+      // always executed
+    });
+}

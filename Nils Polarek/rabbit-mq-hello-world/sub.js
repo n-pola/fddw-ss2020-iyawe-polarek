@@ -1,5 +1,12 @@
 var amqp = require("amqplib/callback_api");
 
+var args = process.argv.slice(2);
+
+if (args.length == 0) {
+  console.log("Usage: sub.js [info] [warning] [error]");
+  process.exit(1);
+}
+
 amqp.connect(
   "amqp://dtnuecqi:gGpHnyj_8HKgJC_w2okKeZZJmXxkEnsn@bee.rmq.cloudamqp.com/dtnuecqi",
   function (error0, connection) {
@@ -10,9 +17,9 @@ amqp.connect(
       if (error1) {
         throw error1;
       }
-      var exchange = "logs";
+      var exchange = "direct_logs";
 
-      channel.assertExchange(exchange, "fanout", {
+      channel.assertExchange(exchange, "direct", {
         durable: false,
       });
 
@@ -25,18 +32,20 @@ amqp.connect(
           if (error2) {
             throw error2;
           }
-          console.log(
-            " [*] Waiting for messages in %s. To exit press CTRL+C",
-            q.queue
-          );
-          channel.bindQueue(q.queue, exchange, "");
+          console.log(" [*] Waiting for logs. To exit press CTRL+C");
+
+          args.forEach(function (severity) {
+            channel.bindQueue(q.queue, exchange, severity);
+          });
 
           channel.consume(
             q.queue,
             function (msg) {
-              if (msg.content) {
-                console.log(" [x] %s", msg.content.toString());
-              }
+              console.log(
+                " [x] %s: '%s'",
+                msg.fields.routingKey,
+                msg.content.toString()
+              );
             },
             {
               noAck: true,

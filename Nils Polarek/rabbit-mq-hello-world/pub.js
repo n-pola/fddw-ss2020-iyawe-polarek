@@ -10,14 +10,16 @@ amqp.connect(
       if (error1) {
         throw error1;
       }
-      var exchange = "logs";
-      var msg = process.argv.slice(2).join(" ") || "Hello World!";
+      var exchange = "direct_logs";
+      var args = process.argv.slice(2);
+      var msg = args.slice(1).join(" ") || "Hello World!";
+      var severity = args.length > 0 ? args[0] : "info";
 
-      channel.assertExchange(exchange, "fanout", {
+      channel.assertExchange(exchange, "direct", {
         durable: false,
       });
-      channel.publish(exchange, "", Buffer.from(msg));
-      console.log(" [x] Sent %s", msg);
+      channel.publish(exchange, severity, Buffer.from(msg));
+      console.log(" [x] Sent %s: '%s'", severity, msg);
     });
 
     setTimeout(function () {

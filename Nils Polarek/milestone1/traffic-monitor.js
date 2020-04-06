@@ -1,4 +1,9 @@
 var amqp = require("amqplib/callback_api");
+const axios = require("axios");
+
+const here = axios.create({
+  baseURL: "https://geocode.search.hereapi.com/v1/",
+});
 
 amqp.connect(
   "amqp://dtnuecqi:gGpHnyj_8HKgJC_w2okKeZZJmXxkEnsn@bee.rmq.cloudamqp.com/dtnuecqi",
@@ -37,6 +42,11 @@ amqp.connect(
                 msg.fields.routingKey,
                 msg.content.toString()
               );
+              let msgJSON = JSON.parse(msg.content.toString());
+              var destination = getLocation(msgJSON.destination);
+              console.log(destination);
+              var start = getLocation(msgJSON.start);
+              console.log(start);
             },
             {
               noAck: true,
@@ -47,3 +57,26 @@ amqp.connect(
     });
   }
 );
+
+async function getLocation(locationName) {
+  locationName = locationName.replace(" ", "+");
+  locationName = locationName.replace(",", "%2C");
+
+  here
+    .get(
+      "/geocode?q=" +
+        locationName +
+        "&apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg"
+    )
+    .then(function (response) {
+      console.log(response.data);
+      return response.data;
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error);
+    })
+    .then(function () {
+      // always executed
+    });
+}

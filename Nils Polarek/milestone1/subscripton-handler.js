@@ -32,7 +32,21 @@ amqp.connect(
             q.queue,
             function (msg) {
               let id = 1;
-              console.log(msg);
+              var content = msg.content.toString();
+              content = JSON.parse(content);
+              let weather = { id: id, location: content.destination };
+              let traffic = { id: id, ...content };
+              console.log(weather);
+              channel.publish(
+                "subscription",
+                "sub.weather",
+                Buffer.from(JSON.stringify(weather))
+              );
+              channel.publish(
+                "subscription",
+                "sub.traffic",
+                Buffer.from(JSON.stringify(traffic))
+              );
               channel.sendToQueue(
                 msg.properties.replyTo,
                 Buffer.from(id.toString()),

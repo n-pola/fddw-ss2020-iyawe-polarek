@@ -65,14 +65,8 @@ async function init() {
               q.queue,
               function (msg) {
                 if (msg.properties.correlationId == correlationId) {
-                  console.log(
-                    " [.] Listening to ID %s",
-                    msg.content.toString()
-                  );
                   listenTo(parseInt(msg.content));
-                  setTimeout(function () {
-                    connection.close();
-                  }, 500);
+                  connection.close();
                 }
               },
               {

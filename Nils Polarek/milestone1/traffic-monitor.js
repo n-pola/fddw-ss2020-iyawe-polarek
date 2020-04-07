@@ -5,6 +5,10 @@ const here = axios.create({
   baseURL: "https://geocode.search.hereapi.com/v1/",
 });
 
+const route = axios.create({
+  baseURL: "https://router.hereapi.com/v8/",
+});
+
 amqp.connect(
   "amqp://dtnuecqi:gGpHnyj_8HKgJC_w2okKeZZJmXxkEnsn@bee.rmq.cloudamqp.com/dtnuecqi",
   function (error0, connection) {
@@ -43,10 +47,7 @@ amqp.connect(
                 msg.content.toString()
               );
               let msgJSON = JSON.parse(msg.content.toString());
-              var destination = getLocation(msgJSON.destination);
-              console.log(destination);
-              var start = getLocation(msgJSON.start);
-              console.log(start);
+              getRoute(msgJSON);
             },
             {
               noAck: true,
@@ -58,14 +59,53 @@ amqp.connect(
   }
 );
 
-async function getLocation(locationName) {
-  locationName = locationName.replace(" ", "+");
-  locationName = locationName.replace(",", "%2C");
+function getLocation(locationName) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      locationName = locationName.replace(" ", "+");
+      locationName = locationName.replace(",", "%2C");
 
-  here
+      here
+        .get(
+          "/geocode?q=" +
+            locationName +
+            "&apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg"
+        )
+        .then(function (response) {
+          console.log(response.data);
+          resolve(response.data);
+        })
+        .catch(function (error) {
+          // handle error
+          console.log(error);
+        })
+        .then(function () {
+          // always executed
+        });
+    } catch (error) {
+      console.log(error);
+      reject(error);
+    }
+  });
+}
+
+async function getRoute({ destination, start }) {
+  var start = await getLocation(start);
+  var destination = await getLocation(destination);
+
+  console.log(start);
+  console.log(destination);
+
+  route
     .get(
-      "/geocode?q=" +
-        locationName +
+      "routes?transportMode=car&origin=" +
+        start.items[0].position.lat +
+        "," +
+        start.items[0].position.lng +
+        "&destination=" +
+        destination.items[0].position.lat +
+        "," +
+        destination.items[0].position.lng +
         "&apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg"
     )
     .then(function (response) {

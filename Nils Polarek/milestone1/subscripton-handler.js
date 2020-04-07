@@ -1,4 +1,19 @@
 var amqp = require("amqplib/callback_api");
+var fs = require("fs");
+
+const createID = function () {
+  let subscriptions = fs.readFileSync("./data/subscriptions.json", "utf8");
+  subscriptions = JSON.parse(subscriptions);
+  var id = Math.floor(Math.random() * 100000);
+  subscriptions.forEach((element) => {
+    if (element.id == id) {
+      id = createItemID(subscriptions);
+    }
+  });
+  subscriptions.push({ id: id });
+  fs.writeFileSync("./data/subscriptions.json", JSON.stringify(subscriptions));
+  return id;
+};
 
 amqp.connect(
   "amqp://dtnuecqi:gGpHnyj_8HKgJC_w2okKeZZJmXxkEnsn@bee.rmq.cloudamqp.com/dtnuecqi",
@@ -31,7 +46,7 @@ amqp.connect(
           channel.consume(
             q.queue,
             function (msg) {
-              let id = 1;
+              let id = createID();
               var content = msg.content.toString();
               content = JSON.parse(content);
               let weather = { id: id, location: content.destination };

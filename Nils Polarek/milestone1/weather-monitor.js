@@ -1,5 +1,6 @@
 var amqp = require("amqplib/callback_api");
 const axios = require("axios");
+var fs = require("fs");
 
 const here = axios.create({
   baseURL: "https://geocode.search.hereapi.com/v1/",
@@ -47,7 +48,7 @@ amqp.connect(
                 msg.content.toString()
               );
               let msgJSON = JSON.parse(msg.content.toString());
-              var forecast = getForecast(msgJSON.location);
+              var forecast = getForecast(msgJSON.location, msgJSON.id);
             },
             {
               noAck: true,
@@ -89,7 +90,7 @@ function getLocation(locationName) {
   });
 }
 
-async function getForecast(locationName) {
+async function getForecast(locationName, id) {
   var longlang = await getLocation(locationName);
   console.log(longlang.items[0].position);
 
@@ -102,6 +103,10 @@ async function getForecast(locationName) {
         ""
     )
     .then(function (response) {
+      let weatherEntries = fs.readFileSync("./data/weather.json", "utf8");
+      weatherEntries = JSON.parse(weatherEntries);
+      weatherEntries.push({ id: id, forecast: response.data });
+      fs.writeFileSync("./data/weather.json", JSON.stringify(weatherEntries));
       console.log(response.data.dailyForecasts.forecastLocation);
       return response.data;
     })

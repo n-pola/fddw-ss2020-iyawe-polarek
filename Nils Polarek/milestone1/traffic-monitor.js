@@ -1,5 +1,6 @@
 var amqp = require("amqplib/callback_api");
 const axios = require("axios");
+var fs = require("fs");
 
 const here = axios.create({
   baseURL: "https://geocode.search.hereapi.com/v1/",
@@ -89,7 +90,7 @@ function getLocation(locationName) {
   });
 }
 
-async function getRoute({ destination, start }) {
+async function getRoute({ id, destination, start }) {
   var start = await getLocation(start);
   var destination = await getLocation(destination);
 
@@ -106,10 +107,14 @@ async function getRoute({ destination, start }) {
         destination.items[0].position.lat +
         "," +
         destination.items[0].position.lng +
-        "&apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg"
+        "&return=summary&apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg"
     )
     .then(function (response) {
       console.log(response.data);
+      let trafficEntries = fs.readFileSync("./data/traffic.json", "utf8");
+      trafficEntries = JSON.parse(trafficEntries);
+      trafficEntries.push({ id: id, route: response.data });
+      fs.writeFileSync("./data/traffic.json", JSON.stringify(trafficEntries));
       return response.data;
     })
     .catch(function (error) {

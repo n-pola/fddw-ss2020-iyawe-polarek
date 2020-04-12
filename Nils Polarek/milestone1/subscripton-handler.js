@@ -51,7 +51,7 @@ amqp.connect(
               content = JSON.parse(content);
               let weather = { id: id, location: content.destination };
               let traffic = { id: id, ...content };
-              console.log(weather);
+              console.log({ id: id, content: content });
               channel.publish(
                 "subscription",
                 "sub.weather",

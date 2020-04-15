@@ -21,39 +21,34 @@ amqp.connect(
         throw error1;
       }
       var exchange = "subscription";
+      var queue = "weather_sub_queue";
 
       channel.assertExchange(exchange, "topic", {
         durable: false,
       });
 
-      channel.assertQueue(
-        "",
-        {
-          exclusive: true,
-        },
-        function (error2, q) {
-          if (error2) {
-            throw error2;
-          }
-          console.log(" [*] Waiting for logs. To exit press CTRL+C");
-          channel.prefetch(1);
-          channel.bindQueue(q.queue, exchange, "sub.weather");
+      channel.assertQueue(queue, {
+        durable: true,
+      });
 
-          channel.consume(
-            q.queue,
-            function (msg) {
-              console.log(
-                " [x] %s:'%s'",
-                msg.fields.routingKey,
-                msg.content.toString()
-              );
-              let msgJSON = JSON.parse(msg.content.toString());
-              var forecast = getForecast(msgJSON.location, msgJSON.id);
-            },
-            {
-              noAck: true,
-            }
+      channel.bindQueue(queue, exchange, "sub.weather");
+
+      channel.prefetch(1);
+
+      channel.consume(
+        queue,
+        function (msg) {
+          console.log(
+            " [x] %s:'%s'",
+            msg.fields.routingKey,
+            msg.content.toString()
           );
+          let msgJSON = JSON.parse(msg.content.toString());
+          var forecast = getForecast(msgJSON.location, msgJSON.id);
+          channel.ack(msg);
+        },
+        {
+          noAck: false,
         }
       );
     });

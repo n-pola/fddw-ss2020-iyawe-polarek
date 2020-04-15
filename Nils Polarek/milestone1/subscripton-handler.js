@@ -26,55 +26,50 @@ amqp.connect(
         throw error1;
       }
       var exchange = "subscription";
-      var queue = "rpc_queue";
+      var queue = "sub_queue";
 
       channel.assertExchange(exchange, "topic", {
         durable: false,
       });
 
-      channel.assertQueue(
-        "",
-        {
-          exclusive: true,
-        },
-        function (error2, q) {
-          if (error2) throw error2;
+      channel.assertQueue(queue, {
+        durable: true,
+      });
 
-          channel.bindQueue(q.queue, exchange, "sub.req");
-          channel.prefetch(1);
+      channel.bindQueue(queue, exchange, "sub.req");
 
-          channel.consume(
-            q.queue,
-            function (msg) {
-              let id = createID();
-              var content = msg.content.toString();
-              content = JSON.parse(content);
-              let weather = { id: id, location: content.destination };
-              let traffic = { id: id, ...content };
-              console.log({ id: id, content: content });
-              channel.publish(
-                "subscription",
-                "sub.weather",
-                Buffer.from(JSON.stringify(weather))
-              );
-              channel.publish(
-                "subscription",
-                "sub.traffic",
-                Buffer.from(JSON.stringify(traffic))
-              );
-              channel.sendToQueue(
-                msg.properties.replyTo,
-                Buffer.from(id.toString()),
-                {
-                  correlationId: msg.properties.correlationId,
-                }
-              );
+      channel.prefetch(1);
 
-              //channel.ack(msg);
-            },
-            { noAck: true }
+      channel.consume(
+        queue,
+        function (msg) {
+          let id = createID();
+          var content = msg.content.toString();
+          content = JSON.parse(content);
+          let weather = { id: id, location: content.destination };
+          let traffic = { id: id, ...content };
+          console.log({ id: id, content: content });
+          channel.publish(
+            "subscription",
+            "sub.weather",
+            Buffer.from(JSON.stringify(weather))
           );
-        }
+          channel.publish(
+            "subscription",
+            "sub.traffic",
+            Buffer.from(JSON.stringify(traffic))
+          );
+          channel.sendToQueue(
+            msg.properties.replyTo,
+            Buffer.from(id.toString()),
+            {
+              correlationId: msg.properties.correlationId,
+            }
+          );
+
+          channel.ack(msg);
+        },
+        { noAck: false }
       );
     });
   }

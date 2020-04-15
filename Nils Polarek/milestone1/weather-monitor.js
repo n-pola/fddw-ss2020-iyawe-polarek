@@ -94,6 +94,24 @@ function getLocation(locationName) {
   });
 }
 
+function reduceWeatherData(weather) {
+  var newWeather = {};
+  var reducedForecasts = [];
+  weather.dailyForecasts.forecastLocation.forecast.forEach((el) => {
+    let forecast = {
+      highTemperature: el.highTemperature,
+      lowTemperature: el.lowTemperature,
+      utcTime: el.utcTime,
+    };
+    reducedForecasts.push(forecast);
+  });
+  newWeather.country = weather.dailyForecasts.forecastLocation.country;
+  newWeather.state = weather.dailyForecasts.forecastLocation.state;
+  newWeather.city = weather.dailyForecasts.forecastLocation.city;
+  newWeather.forecast = reducedForecasts;
+  return newWeather;
+}
+
 async function getForecast(locationName, id) {
   return new Promise(async function (resolve, reject) {
     try {
@@ -111,12 +129,13 @@ async function getForecast(locationName, id) {
         .then(function (response) {
           let weatherEntries = fs.readFileSync("./data/weather.json", "utf8");
           weatherEntries = JSON.parse(weatherEntries);
-          weatherEntries.push({ id: id, forecast: response.data });
+          let data = reduceWeatherData(response.data);
+          weatherEntries.push({ id: id, data: data });
           fs.writeFileSync(
             "./data/weather.json",
             JSON.stringify(weatherEntries)
           );
-          resolve({ id: id, forecast: response.data });
+          resolve({ id: id, data: data });
         })
         .catch(function (error) {
           // handle error

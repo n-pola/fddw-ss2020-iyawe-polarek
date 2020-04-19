@@ -5,7 +5,7 @@ var args = process.argv.slice(2);
 
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout,
+  output: process.stdout
 });
 
 const getLine = (function (msg) {
@@ -45,7 +45,7 @@ async function init() {
         channel.assertQueue(
           "",
           {
-            exclusive: true,
+            exclusive: true
           },
           function (error2, q) {
             if (error2) {
@@ -58,7 +58,7 @@ async function init() {
             console.log(" [x] Requesting ID");
 
             channel.assertExchange("subscription", "topic", {
-              durable: false,
+              durable: false
             });
 
             channel.consume(
@@ -70,13 +70,13 @@ async function init() {
                 }
               },
               {
-                noAck: true,
+                noAck: true
               }
             );
 
             channel.publish("subscription", "sub.req", Buffer.from(msg), {
               correlationId: correlationId,
-              replyTo: q.queue,
+              replyTo: q.queue
             });
           }
         );
@@ -100,20 +100,20 @@ function listenTo(id) {
         }
 
         channel.assertExchange("user_notification", "topic", {
-          durable: false,
+          durable: false
         });
 
         channel.assertQueue(
           "",
           {
-            exclusive: true,
+            exclusive: true
           },
           function (error2, q) {
             if (error2) {
               throw error2;
             }
 
-            channel.bindQueue(q.queue, "user_notification", id + ".*");
+            channel.bindQueue(q.queue, "user_notification", id.toString());
 
             channel.prefetch(1);
 
@@ -123,7 +123,7 @@ function listenTo(id) {
                 console.log(msg.content.toString());
               },
               {
-                noAck: true,
+                noAck: true
               }
             );
           }

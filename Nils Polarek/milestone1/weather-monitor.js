@@ -3,11 +3,11 @@ const axios = require("axios");
 var fs = require("fs");
 
 const here = axios.create({
-  baseURL: "https://geocode.search.hereapi.com/v1/",
+  baseURL: "https://geocode.search.hereapi.com/v1/"
 });
 
 const weather = axios.create({
-  baseURL: "https://weather.ls.hereapi.com/weather/1.0/",
+  baseURL: "https://weather.ls.hereapi.com/weather/1.0/"
 });
 
 weatherMonitor();
@@ -27,11 +27,11 @@ async function weatherMonitor() {
         var queue = "weather_sub_queue";
 
         channel.assertExchange(exchange, "topic", {
-          durable: false,
+          durable: false
         });
 
         channel.assertQueue(queue, {
-          durable: true,
+          durable: true
         });
 
         channel.bindQueue(queue, exchange, "sub.weather");
@@ -47,7 +47,7 @@ async function weatherMonitor() {
               msg.content.toString()
             );
             let msgJSON = JSON.parse(msg.content.toString());
-            var forecast = await getForecast(msgJSON.location, msgJSON.id);
+            var forecast = await getForecast(msgJSON.destination, msgJSON.id);
             console.log(forecast);
             channel.publish(
               "combine_select",
@@ -57,41 +57,12 @@ async function weatherMonitor() {
             channel.ack(msg);
           },
           {
-            noAck: false,
+            noAck: false
           }
         );
       });
     }
   );
-}
-
-function getLocation(locationName) {
-  return new Promise(async function (resolve, reject) {
-    try {
-      locationName = locationName.replace(" ", "+");
-      locationName = locationName.replace(",", "%2C");
-
-      here
-        .get(
-          "/geocode?q=" +
-            locationName +
-            "&apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg"
-        )
-        .then(function (response) {
-          resolve(response.data);
-        })
-        .catch(function (error) {
-          // handle error
-          console.log(error);
-        })
-        .then(function () {
-          // always executed
-        });
-    } catch (error) {
-      console.log(error);
-      reject(error);
-    }
-  });
 }
 
 function reduceWeatherData(weather) {
@@ -101,7 +72,7 @@ function reduceWeatherData(weather) {
     let forecast = {
       highTemperature: el.highTemperature,
       lowTemperature: el.lowTemperature,
-      utcTime: el.utcTime,
+      utcTime: el.utcTime
     };
     reducedForecasts.push(forecast);
   });
@@ -112,18 +83,15 @@ function reduceWeatherData(weather) {
   return newWeather;
 }
 
-async function getForecast(locationName, id) {
+async function getForecast(destination, id) {
   return new Promise(async function (resolve, reject) {
     try {
-      var longlang = await getLocation(locationName);
-      console.log(longlang.items[0].position);
-
       var forecast = await weather
         .get(
           "report.json?apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg&product=forecast_7days_simple&latitude=" +
-            longlang.items[0].position.lat +
+            destination.lat +
             "&longitude=" +
-            longlang.items[0].position.lng +
+            destination.lng +
             ""
         )
         .then(function (response) {
@@ -138,12 +106,8 @@ async function getForecast(locationName, id) {
           resolve({ id: id, data: data });
         })
         .catch(function (error) {
-          // handle error
           console.log(error);
           reject(error);
-        })
-        .then(function () {
-          // always executed
         });
     } catch (error) {
       console.log(error);

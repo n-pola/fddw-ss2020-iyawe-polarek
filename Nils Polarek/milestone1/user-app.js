@@ -61,16 +61,30 @@ async function init() {
               durable: false
             });
 
+            channel.prefetch(1);
+
             channel.consume(
               q.queue,
               function (msg) {
                 if (msg.properties.correlationId == correlationId) {
-                  listenTo(parseInt(msg.content));
-                  connection.close();
+                  let id = parseInt(msg.content);
+                  console.log(id);
+                  channel.assertExchange("user_notification", "topic", {
+                    durable: false
+                  });
+                  channel.bindQueue(
+                    q.queue,
+                    "user_notification",
+                    id.toString()
+                  );
+                  channel.ack(msg);
+                } else {
+                  console.log(JSON.parse(msg.content.toString()));
+                  channel.ack(msg);
                 }
               },
               {
-                noAck: true
+                noAck: false
               }
             );
 
@@ -78,54 +92,6 @@ async function init() {
               correlationId: correlationId,
               replyTo: q.queue
             });
-          }
-        );
-      });
-    }
-  );
-}
-
-function listenTo(id) {
-  console.log(id);
-
-  amqp.connect(
-    "amqp://dtnuecqi:gGpHnyj_8HKgJC_w2okKeZZJmXxkEnsn@bee.rmq.cloudamqp.com/dtnuecqi",
-    function (error0, connection) {
-      if (error0) {
-        throw error0;
-      }
-      connection.createChannel(function (error1, channel) {
-        if (error1) {
-          throw error1;
-        }
-
-        channel.assertExchange("user_notification", "topic", {
-          durable: false
-        });
-
-        channel.assertQueue(
-          "",
-          {
-            exclusive: true
-          },
-          function (error2, q) {
-            if (error2) {
-              throw error2;
-            }
-
-            channel.bindQueue(q.queue, "user_notification", id.toString());
-
-            channel.prefetch(1);
-
-            channel.consume(
-              q.queue,
-              function (msg) {
-                console.log(msg.content.toString());
-              },
-              {
-                noAck: true
-              }
-            );
           }
         );
       });

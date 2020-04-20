@@ -117,12 +117,10 @@ amqp.connect(
           let entries = fs.readFileSync("./data/combine.json", "utf8");
           entries = JSON.parse(entries);
           entries.forEach((el) => {
-            console.log(el.id, msgJSON.id);
             if (el.id == msgJSON.id) {
-              channel.publish(
-                "user_notification",
-                msgJSON.id.toString(),
-                Buffer.from("oida")
+              channel.sendToQueue(
+                msg.properties.replyTo,
+                Buffer.from(JSON.stringify(el))
               );
             }
           });

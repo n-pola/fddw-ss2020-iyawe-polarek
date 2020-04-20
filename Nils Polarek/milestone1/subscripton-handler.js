@@ -50,10 +50,14 @@ amqp.connect(
               Buffer.from(JSON.stringify(subObj))
             );
           } else {
+            console.log(msg.properties.replyTo);
             channel.publish(
               "combine_select",
               "newUser",
-              Buffer.from(JSON.stringify(subObj))
+              Buffer.from(JSON.stringify(subObj)),
+              {
+                replyTo: msg.properties.replyTo.toString()
+              }
             );
           }
 

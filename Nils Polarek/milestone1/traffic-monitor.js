@@ -53,6 +53,43 @@ amqp.connect(
           noAck: false
         }
       );
+
+      var minutes = 10;
+      var the_interval = minutes * 60 * 1000;
+      setInterval(checkTraffic, the_interval);
+      async function checkTraffic() {
+        let traffic = fs.readFileSync("./data/traffic.json", "utf8");
+        traffic = JSON.parse(traffic);
+
+        for (i = 0; i < traffic.length; i++) {
+          let element = traffic[i];
+          let id = element.id;
+          let section = element.data.routes[0].sections[0];
+          console.log(section);
+          let destination = {
+            lat: section.arrival.place.originalLocation.lat,
+            lng: section.arrival.place.originalLocation.lng
+          };
+          let start = {
+            lat: section.departure.place.originalLocation.lat,
+            lng: section.departure.place.originalLocation.lng
+          };
+          var newTraffic = await getRouteInterval(id, start, destination);
+
+          console.log(newTraffic);
+
+          if (!(JSON.stringify(element) === JSON.stringify(newTraffic))) {
+            traffic[i] = newTraffic;
+            console.log("update for" + element.id);
+            channel.publish(
+              "combine_select",
+              "combine.traffic",
+              Buffer.from(JSON.stringify(newTraffic))
+            );
+          }
+        }
+        fs.writeFileSync("./data/traffic.json", JSON.stringify(traffic));
+      }
     });
   }
 );
@@ -75,12 +112,39 @@ async function getRoute({ type, id, start, destination }) {
         .then(function (response) {
           let trafficEntries = fs.readFileSync("./data/traffic.json", "utf8");
           trafficEntries = JSON.parse(trafficEntries);
-          trafficEntries.push({ id: id, route: response.data });
+          trafficEntries.push({ id: id, data: response.data });
           fs.writeFileSync(
             "./data/traffic.json",
             JSON.stringify(trafficEntries)
           );
           resolve(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+async function getRouteInterval(id, start, destination) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      route
+        .get(
+          "routes?transportMode=car&origin=" +
+            start.lat +
+            "," +
+            start.lng +
+            "&destination=" +
+            destination.lat +
+            "," +
+            destination.lng +
+            "&return=summary&apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg"
+        )
+        .then(function (response) {
+          resolve({ id: id, data: response.data });
         })
         .catch(function (error) {
           console.log(error);

@@ -1,0 +1,25 @@
+{
+  "name": "fddw-ss2020-iyawe-polarek",
+  "version": "1.0.0",
+  "description": "Frameworks, Dienste und Daten im Web, TH Köln Sommersemester 2020",
+  "main": "send.js",
+  "dependencies": {
+    "amqplib": "^0.5.5"
+  },
+  "devDependencies": {
+    "nodemon": "2.0.3"
+  },
+  "scripts": {
+    "test": "nodemon send.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n-pola/fddw-ss2020-iyawe-polarek.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/n-pola/fddw-ss2020-iyawe-polarek/issues"
+  },
+  "homepage": "https://github.com/n-pola/fddw-ss2020-iyawe-polarek#readme"
+}

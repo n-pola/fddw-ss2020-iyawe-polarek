@@ -60,6 +60,38 @@ async function weatherMonitor() {
             noAck: false
           }
         );
+        var minutes = 10;
+        var the_interval = minutes * 60 * 1000;
+        setInterval(checkWeather, the_interval);
+        async function checkWeather() {
+          let checkWeatherEntry = fs.readFileSync(
+            "./data/weather.json",
+            "utf8"
+          );
+          checkWeatherEntry = JSON.parse(checkWeatherEntry);
+
+          for (i = 0; i < checkWeatherEntry.length; i++) {
+            let element = checkWeatherEntry[i];
+            let id = element.id;
+            let destination = { lat: element.lat, lng: element.lng };
+            console.log(id, destination);
+            var forecast = await getForecastInterval(destination, id);
+
+            if (!(JSON.stringify(element) === JSON.stringify(forecast))) {
+              checkWeatherEntry[i] = forecast;
+              console.log("update for" + element.id);
+              channel.publish(
+                "combine_select",
+                "combine.weather",
+                Buffer.from(JSON.stringify(forecast))
+              );
+            }
+          }
+          fs.writeFileSync(
+            "./data/weather.json",
+            JSON.stringify(checkWeatherEntry)
+          );
+        }
       });
     }
   );
@@ -98,12 +130,53 @@ async function getForecast(destination, id) {
           let weatherEntries = fs.readFileSync("./data/weather.json", "utf8");
           weatherEntries = JSON.parse(weatherEntries);
           let data = reduceWeatherData(response.data);
-          weatherEntries.push({ id: id, data: data });
+          weatherEntries.push({
+            id: id,
+            data: data,
+            lat: destination.lat,
+            lng: destination.lng
+          });
           fs.writeFileSync(
             "./data/weather.json",
             JSON.stringify(weatherEntries)
           );
-          resolve({ id: id, data: data });
+          resolve({
+            id: id,
+            data: data,
+            lat: destination.lat,
+            lng: destination.lng
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+          reject(error);
+        });
+    } catch (error) {
+      console.log(error);
+      reject(error);
+    }
+  });
+}
+
+async function getForecastInterval(destination, id) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      var forecast = await weather
+        .get(
+          "report.json?apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg&product=forecast_7days_simple&latitude=" +
+            destination.lat +
+            "&longitude=" +
+            destination.lng +
+            ""
+        )
+        .then(function (response) {
+          let data = reduceWeatherData(response.data);
+          resolve({
+            id: id,
+            data: data,
+            lat: destination.lat,
+            lng: destination.lng
+          });
         })
         .catch(function (error) {
           console.log(error);

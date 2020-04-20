@@ -50,14 +50,16 @@ amqp.connect(
             entries = JSON.parse(entries);
             entries.forEach((element) => {
               if (element.id == msgJSON.id) {
+                element.traffic.splice(0, element.traffic.length);
                 element.traffic.push(msgJSON.data);
-              }
-              if (element.weather.length) {
-                channel.publish(
-                  "user_notification",
-                  msgJSON.id.toString(),
-                  Buffer.from(JSON.stringify(element))
-                );
+
+                if (element.weather.length) {
+                  channel.publish(
+                    "user_notification",
+                    msgJSON.id.toString(),
+                    Buffer.from(JSON.stringify(element))
+                  );
+                }
               }
             });
             fs.writeFileSync("./data/combine.json", JSON.stringify(entries));
@@ -66,18 +68,64 @@ amqp.connect(
             entries = JSON.parse(entries);
             entries.forEach((element) => {
               if (element.id == msgJSON.id) {
+                element.weather.splice(0, element.weather.length);
                 element.weather.push(msgJSON.data);
-              }
-              if (element.traffic.length) {
-                channel.publish(
-                  "user_notification",
-                  msgJSON.id.toString(),
-                  Buffer.from(JSON.stringify(element))
-                );
+
+                if (element.traffic.length) {
+                  channel.publish(
+                    "user_notification",
+                    msgJSON.id.toString(),
+                    Buffer.from(JSON.stringify(element))
+                  );
+                }
               }
             });
             fs.writeFileSync("./data/combine.json", JSON.stringify(entries));
           }
+          channel.ack(msg);
+        },
+        { noAck: false }
+      );
+    });
+
+    connection.createChannel(function (error1, channel) {
+      if (error1) {
+        throw error1;
+      }
+      var exchange = "combine_select";
+      var queue = "select_queue";
+
+      channel.assertExchange(exchange, "topic", {
+        durable: false
+      });
+
+      channel.assertQueue(queue, {
+        durable: true
+      });
+      channel.bindQueue(queue, exchange, "newUser");
+
+      channel.prefetch(1);
+
+      channel.consume(
+        queue,
+        function (msg) {
+          let msgJSON = JSON.parse(msg.content.toString());
+          let key = msg.fields.routingKey;
+
+          console.log(key, msgJSON);
+
+          let entries = fs.readFileSync("./data/combine.json", "utf8");
+          entries = JSON.parse(entries);
+          entries.forEach((el) => {
+            console.log(el.id, msgJSON.id);
+            if (el.id == msgJSON.id) {
+              channel.publish(
+                "user_notification",
+                msgJSON.id.toString(),
+                Buffer.from("oida")
+              );
+            }
+          });
           channel.ack(msg);
         },
         { noAck: false }

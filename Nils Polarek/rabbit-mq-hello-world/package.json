@@ -1,0 +1,14 @@
+{
+  "name": "rabbit-mq-hello-world",
+  "version": "1.0.0",
+  "description": "Rabbit MQ first Test with NodeJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.5.5"
+  }
+}

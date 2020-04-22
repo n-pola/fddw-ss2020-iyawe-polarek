@@ -1,0 +1,110 @@
+[
+  {
+    "id": 2,
+    "data": {
+      "routes": [
+        {
+          "id": "6996a044-1d68-46fa-aae4-d13a671dcc9e",
+          "sections": [
+            {
+              "id": "5655ea7e-280a-47b4-a4f6-f4e72bc14810",
+              "type": "vehicle",
+              "departure": {
+                "place": {
+                  "type": "place",
+                  "location": { "lat": 52.5160433, "lng": 13.3769178 },
+                  "originalLocation": { "lat": 52.5160397, "lng": 13.3769099 }
+                }
+              },
+              "arrival": {
+                "place": {
+                  "type": "place",
+                  "location": { "lat": 48.1364099, "lng": 11.57756 },
+                  "originalLocation": { "lat": 48.1364098, "lng": 11.57754 }
+                }
+              },
+              "summary": {
+                "duration": 19965,
+                "length": 583270,
+                "baseDuration": 19306
+              },
+              "transport": { "mode": "car" }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "data": {
+      "routes": [
+        {
+          "id": "89b4eeca-ebaf-407f-a738-b62a3d442d74",
+          "sections": [
+            {
+              "id": "8ec9fdc0-0a81-4e34-a46d-33f37debd0de",
+              "type": "vehicle",
+              "departure": {
+                "place": {
+                  "type": "place",
+                  "location": { "lat": 52.5160433, "lng": 13.3769177 },
+                  "originalLocation": { "lat": 52.5160397, "lng": 13.3769099 }
+                }
+              },
+              "arrival": {
+                "place": {
+                  "type": "place",
+                  "location": { "lat": 52.3702066, "lng": 4.8734482 },
+                  "originalLocation": { "lat": 52.37018, "lng": 4.8732398 }
+                }
+              },
+              "summary": {
+                "duration": 23268,
+                "length": 657241,
+                "baseDuration": 22420
+              },
+              "transport": { "mode": "car" }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "data": {
+      "routes": [
+        {
+          "id": "2f394e5f-5f71-4922-a9fd-0b9a4bead9cf",
+          "sections": [
+            {
+              "id": "1c3b859b-a958-4cb1-8529-940d4beda301",
+              "type": "vehicle",
+              "departure": {
+                "place": {
+                  "type": "place",
+                  "location": { "lat": 52.5160433, "lng": 13.3769177 },
+                  "originalLocation": { "lat": 52.5160397, "lng": 13.3769099 }
+                }
+              },
+              "arrival": {
+                "place": {
+                  "type": "place",
+                  "location": { "lat": 51.9143807, "lng": 4.4871586 },
+                  "originalLocation": { "lat": 51.91438, "lng": 4.48716 }
+                }
+              },
+              "summary": {
+                "duration": 24072,
+                "length": 692209,
+                "baseDuration": 23224
+              },
+              "transport": { "mode": "car" }
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

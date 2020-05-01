@@ -30,33 +30,29 @@ async function registrationHandler() {
             //created an exchange between Registration Handler and the (traffic, weather) queues stop direct routing between the registration handler.
             var exchange = "registration_exchange";
             var travel_id = generateUuid();
-            var message = { start_date: Date(21), end_date: Date(21), destination: "Berlin", travel_id: travel_id };
 
 
-            channel.assertExchange(exchange, 'direct', {
-                durable: true
-            })
-
-            channel.publish(exchange, 'weather.location', Buffer.from(message.travel_id), Buffer.from(message.destination), {
-                correlationId: travel_id
-            })
-            console.log(`sent: ${message.travel_id} and ${message.destination} `)
-
-            channel.publish(exchange, 'traffic.route', Buffer.from(message.travel_id), Buffer.from(message.destination), {
-                correlationId: travel_id
-            })
-            console.log(`sent: ${message.travel_id} and ${message.destination}`)
-
-
-            channel.assertQueue(queue, {
-                exclusive: true
-            }, (error2, queue) => {
-                if (error2) console.error(error1.message)
-            })
-
+            
+            
             channel.consume(queue, (message) => {
                 if (message.content) {
-                    console.log(" [x] %s", msg.content.toString())
+                    channel.prefetch(1)
+                    console.log(" [x] %s", message.content.toString());
+                    //channel.ack(message);
+
+                    let msgJSON = JSON.parse(message.content.toString());
+                    var msg = { id: travel_id, destination: msgJSON.destination }
+
+                    channel.assertExchange(exchange, 'direct', {
+                        durable: true
+                    })
+
+                    channel.publish(exchange, 'weather.location', Buffer.from(JSON.stringify(msg)))
+                    console.log(`sent: ${JSON.stringify(msg)} `)
+
+                    channel.publish(exchange, 'traffic.route', Buffer.from(JSON.stringify(msg)))
+                    console.log(`sent: ${JSON.stringify(msg)}  `)
+
                 }
             })
         })

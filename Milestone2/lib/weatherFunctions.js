@@ -1,5 +1,7 @@
 require("dotenv").config();
 const axios = require("axios");
+const MongoClient = require("mongodb").MongoClient;
+const url = process.env.MONGO_BASE;
 
 const here = axios.create({
   baseURL: process.env.LOCATION_BASE
@@ -82,11 +84,40 @@ const getForecast = async function (destination) {
       let forecast = await getWeather(location.lat, location.lng);
       resolve(forecast);
     } catch (error) {
-      throw error;
+      reject(error);
+    }
+  });
+};
+
+const updateEntry = function (dbo, id, data) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      dbo.collection("entries").findOne({ id: id }, function (err, result) {
+        if (result == null) {
+          obj = { id: id, data: data };
+          dbo.collection("entries").insertOne(obj, function (err, res) {
+            resolve("initial");
+          });
+        } else {
+          if (JSON.stringify(result.data) === JSON.stringify(data)) {
+            resolve("noChange");
+          } else {
+            obj = { id: id, data: data };
+            dbo
+              .collection("customers")
+              .updateOne({ _id: result._id }, obj, function (err, res) {
+                resolve("update");
+              });
+          }
+        }
+      });
+    } catch (error) {
+      reject(error);
     }
   });
 };
 
 module.exports = {
-  getForecast
+  getForecast,
+  updateEntry
 };

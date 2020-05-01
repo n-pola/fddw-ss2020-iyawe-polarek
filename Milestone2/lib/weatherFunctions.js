@@ -93,6 +93,7 @@ const updateEntry = function (dbo, id, data) {
   return new Promise(async function (resolve, reject) {
     try {
       dbo.collection("entries").findOne({ id: id }, function (err, result) {
+        console.log(result);
         if (result == null) {
           obj = { id: id, data: data };
           dbo.collection("entries").insertOne(obj, function (err, res) {
@@ -104,7 +105,7 @@ const updateEntry = function (dbo, id, data) {
           } else {
             obj = { id: id, data: data };
             dbo
-              .collection("customers")
+              .collection("entries")
               .updateOne({ _id: result._id }, obj, function (err, res) {
                 resolve("update");
               });

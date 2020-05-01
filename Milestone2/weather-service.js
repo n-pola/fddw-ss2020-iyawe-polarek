@@ -47,7 +47,11 @@ function listenTOQueue() {
         async function (msg) {
           let msgJSON = JSON.parse(msg.content.toString());
           let weather = await forecast.getForecast(msgJSON.destination);
-          let dbInfo = await forecast.updateEntry(dbo, 123, weather.data);
+          let dbInfo = await forecast.updateEntry(
+            dbo,
+            msgJSON.id,
+            weather.data
+          );
           let sendTopic = msgJSON.id + ".weather";
           if (dbInfo == "initial") {
             sendTopic = sendTopic + ".initial";

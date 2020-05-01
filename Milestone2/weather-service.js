@@ -1,6 +1,5 @@
 require("dotenv").config();
 const amqp = require("amqplib/callback_api");
-var mongodb = require("mongodb");
 const MongoClient = require("mongodb").MongoClient;
 const url = process.env.MONGO_BASE;
 var dbo;
@@ -27,7 +26,7 @@ function listenTOQueue() {
 
       let exchange = "fddw";
       let queue = "weather_queue";
-      let topic = "weather.add";
+      let topic = "weather.*";
 
       channel.assertExchange(exchange, "topic", {
         durable: false
@@ -50,7 +49,8 @@ function listenTOQueue() {
           let dbInfo = await forecast.updateEntry(
             dbo,
             msgJSON.id,
-            weather.data
+            weather.data,
+            msgJSON.destination
           );
           let sendTopic = msgJSON.id + ".weather";
           if (dbInfo == "initial") {

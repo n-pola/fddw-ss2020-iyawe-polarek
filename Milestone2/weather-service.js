@@ -48,8 +48,22 @@ function listenTOQueue() {
           let msgJSON = JSON.parse(msg.content.toString());
           let weather = await forecast.getForecast(msgJSON.destination);
           let dbInfo = await forecast.updateEntry(dbo, 123, weather.data);
-          console.log(dbInfo);
-          console.log(weather);
+          let sendTopic = msgJSON.id + ".weather";
+          if (dbInfo == "initial") {
+            sendTopic = sendTopic + ".initial";
+            channel.publish(
+              exchange,
+              sendTopic,
+              Buffer.from(JSON.stringify(weather.data))
+            );
+          } else if (dbInfo == "update") {
+            sendTopic = sendTopic + ".update";
+            channel.publish(
+              exchange,
+              sendTopic,
+              Buffer.from(JSON.stringify(weather.data))
+            );
+          }
           channel.ack(msg);
         },
         {

@@ -13,7 +13,7 @@ amqp.connect(process.env.AMQP_URL, function (error0, connection) {
 
     let exchange = "fddw";
     let topic = "weather.add";
-    var msg = { ID: 123, destination: "Zillertal, Austria" };
+    var msg = { ID: 1, destination: "Berlin" };
     msg = JSON.stringify(msg);
 
     channel.publish(exchange, topic, Buffer.from(msg));

@@ -1,0 +1,19 @@
+{
+  "name": "milestone2",
+  "version": "0.0.1",
+  "description": "This folder holds Services for running a distributed Group Holiday planning service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "George Iyawe, Nils Polarek",
+  "license": "MIT",
+  "dependencies": {
+    "amqplib": "^0.5.5",
+    "discord.js": "^12.2.0",
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.3"
+  }
+}

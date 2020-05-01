@@ -89,13 +89,13 @@ const getForecast = async function (destination) {
   });
 };
 
-const updateEntry = function (dbo, id, data) {
+const updateEntry = function (dbo, id, data, destination) {
   return new Promise(async function (resolve, reject) {
     try {
       dbo.collection("entries").findOne({ id: id }, function (err, result) {
         console.log(result);
         if (result == null) {
-          obj = { id: id, data: data };
+          obj = { id: id, data: data, destination: destination };
           dbo.collection("entries").insertOne(obj, function (err, res) {
             resolve("initial");
           });
@@ -103,7 +103,7 @@ const updateEntry = function (dbo, id, data) {
           if (JSON.stringify(result.data) === JSON.stringify(data)) {
             resolve("noChange");
           } else {
-            obj = { id: id, data: data };
+            obj = { id: id, data: data, destination: destination };
             dbo
               .collection("entries")
               .updateOne({ _id: result._id }, obj, function (err, res) {

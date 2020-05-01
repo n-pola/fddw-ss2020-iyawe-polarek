@@ -1,7 +1,9 @@
 require("dotenv").config();
-var amqp = require("amqplib/callback_api");
-var MongoClient = require("mongodb").MongoClient;
-var url = process.env.MONGO_BASE;
+const amqp = require("amqplib/callback_api");
+const MongoClient = require("mongodb").MongoClient;
+const url = process.env.MONGO_BASE;
+
+const forecast = require("./lib/weatherFunctions");
 
 amqp.connect(process.env.AMQP_URL, function (error0, connection) {
   if (error0) {
@@ -32,8 +34,10 @@ amqp.connect(process.env.AMQP_URL, function (error0, connection) {
 
     channel.consume(
       queue,
-      function (msg) {
-        console.log(msg);
+      async function (msg) {
+        let msgJSON = JSON.parse(msg.content.toString());
+        let weather = await forecast.getForecast(msgJSON.destination);
+        console.log(weather);
         channel.ack(msg);
       },
       {

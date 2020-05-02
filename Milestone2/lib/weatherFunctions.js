@@ -93,12 +93,17 @@ const updateEntry = function (dbo, id, data, destination) {
   return new Promise(async function (resolve, reject) {
     try {
       dbo.collection("entries").findOne({ id: id }, function (err, result) {
-        console.log(result);
-        if (result == null) {
+        if (Object.keys(result.data).length === 0) {
           obj = { id: id, data: data, destination: destination };
-          dbo.collection("entries").insertOne(obj, function (err, res) {
-            resolve("initial");
-          });
+          dbo
+            .collection("entries")
+            .replaceOne({ _id: result._id }, { $set: obj }, function (
+              err,
+              res
+            ) {
+              if (err) throw err;
+              resolve("initial");
+            });
         } else {
           if (JSON.stringify(result.data) === JSON.stringify(data)) {
             resolve("noChange");
@@ -106,7 +111,11 @@ const updateEntry = function (dbo, id, data, destination) {
             obj = { id: id, data: data, destination: destination };
             dbo
               .collection("entries")
-              .updateOne({ _id: result._id }, obj, function (err, res) {
+              .replaceOne({ _id: result._id }, { $set: obj }, function (
+                err,
+                res
+              ) {
+                if (err) throw err;
                 resolve("update");
               });
           }

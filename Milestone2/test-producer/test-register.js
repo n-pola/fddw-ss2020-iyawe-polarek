@@ -14,7 +14,7 @@ amqp.connect(process.env.AMQP_URL, (error0, conntection) => {
     var message = {
       start_date: "2020.05.01",
       end_date: "2020.05.04",
-      destination: "Soelden"
+      destination: "Cologne"
     };
 
     channel.assertQueue(

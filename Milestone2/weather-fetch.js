@@ -24,13 +24,10 @@ function listenTOQueue() {
         throw error1;
       }
 
-      let exchange = "fddw";
-      let queue = "weather_queue";
-      let topic = "weather.*";
+      let queue = "weather_fetch_jobs";
+      let exchange_out = "combine_select";
 
-      channel.assertExchange(exchange, "topic", {
-        durable: false
-      });
+      channel.assertExchange(exchange_out, "topic", { durable: true });
 
       channel.assertQueue(queue, {
         durable: true
@@ -39,12 +36,11 @@ function listenTOQueue() {
       // Nur eine Message gleichzeitig annehmen
       channel.prefetch(1);
 
-      channel.bindQueue(queue, exchange, topic);
-
       channel.consume(
         queue,
         async function (msg) {
           let msgJSON = JSON.parse(msg.content.toString());
+          console.log(msgJSON);
           let weather = await forecast.getForecast(msgJSON.destination);
           let dbInfo = await forecast.updateEntry(
             dbo,
@@ -52,18 +48,19 @@ function listenTOQueue() {
             weather.data,
             msgJSON.destination
           );
+          console.log(dbInfo);
           let sendTopic = msgJSON.id + ".weather";
           if (dbInfo == "initial") {
             sendTopic = sendTopic + ".initial";
             channel.publish(
-              exchange,
+              exchange_out,
               sendTopic,
               Buffer.from(JSON.stringify(weather.data))
             );
           } else if (dbInfo == "update") {
             sendTopic = sendTopic + ".update";
             channel.publish(
-              exchange,
+              exchange_out,
               sendTopic,
               Buffer.from(JSON.stringify(weather.data))
             );

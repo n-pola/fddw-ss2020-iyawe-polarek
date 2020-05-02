@@ -66,6 +66,11 @@ async function registrationHandler() {
               `${msg.id}.register`,
               Buffer.from(JSON.stringify(msg))
             );
+
+            channel.sendToQueue(
+              message.properties.replyTo,
+              Buffer.from(JSON.stringify(msg))
+            );
             console.log(`sent: ${JSON.stringify(msg)} `);
             channel.ack(message);
           }

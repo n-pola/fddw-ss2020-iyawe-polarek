@@ -1,15 +1,19 @@
 const amqp = require('amqplib/callback_api');
 const dotenv = require('dotenv').config()
 const MongoClient = require('mongodb').MongoClient
-var randomNumGenerator = require("./lib/randomNumberGenerator.js")
 var db_id;
 
 
 
-registrationHandler()
 
 
+MongoClient.connect(process.env.MONGO_BASE, { useUnifiedTopology: true }, (error, db) => {
+    if (error) console.error(error);
+    db_id = db.db("travel_ids")
+    console.log("Connected");
 
+    registrationHandler()
+})
 async function registrationHandler() {
     amqp.connect(process.env.AMQP_URL, (error0, connection) => {
         if (error0) {
@@ -28,13 +32,10 @@ async function registrationHandler() {
             channel.prefetch(1);
 
 
-
-
             channel.consume(queue, (message) => {
                 if (message.content) {
 
                     console.log(" [x] %s", message.content.toString());
-                    //channel.ack(message);
                     var travel_id = generateUuid();
                     let msgJSON = JSON.parse(message.content.toString());
                     var msg = { id: travel_id, destination: msgJSON.destination, startDate: msgJSON.start_date }
@@ -43,7 +44,7 @@ async function registrationHandler() {
                         durable: true
                     })
 
-                    channel.publish(exchange, 'weather.location', Buffer.from(JSON.stringify(msg)))
+                    channel.publish(exchange, '*.register', Buffer.from(JSON.stringify(msg)))
                     console.log(`sent: ${JSON.stringify(msg)} `)
 
                     channel.publish(exchange, 'traffic.route', Buffer.from(JSON.stringify(msg)))
@@ -57,40 +58,21 @@ async function registrationHandler() {
     })
 }
 
-
-
-const randomNumber = () => {
-    var randomNum = Math.floor(Math.random() * 90000) + 10000;
-    return randomNum
-}
-
-
-
 //creates a five digit random id for the travel Log.
 function generateUuid() {
-    try {
-        var newNum = randomNumber()
-        console.log(newNum)
-        var newNumParse = { "number": newNum }
+    var id = Math.floor(Math.random() * 90000) + 10000;
 
-        MongoClient.connect(process.env.MONGO_BASE, { useUnifiedTopology: true }, (error, db) => {
-            if (error) console.error(error);
-            db_id = db.db("travel_ids")
-            console.log("Connected");
+    db_id.collection("ID_entries").findOne({ number: id }, function (err, result) {
+        if (result != null) {
+            id = generateUuid();
 
-            var findIDinDB = db_id.collection("ID_entries").findOne(newNumParse)
-            if (findIDinDB == 30378) {
-                console.log("ID already exsists. Rerolling...")
-                randomNumber()
-            } else {
-                db_id.collection("ID_entries").insertOne(newNumParse)
-                console.log("Saved the new ID ")
-            }
-        })
+        } else {
+            db_id.collection("ID_entries").insertOne({ number: id }, function (err, res) { });
+        }
+    });
 
-        return JSON.stringify(newNumParse.number)
-    } catch (error) {
-        throw error;
-    }
+    return id;
+
 }
+
 

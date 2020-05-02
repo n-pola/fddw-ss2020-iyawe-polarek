@@ -1,7 +1,5 @@
 require("dotenv").config();
 const axios = require("axios");
-const MongoClient = require("mongodb").MongoClient;
-const url = process.env.MONGO_BASE;
 
 const here = axios.create({
   baseURL: process.env.LOCATION_BASE

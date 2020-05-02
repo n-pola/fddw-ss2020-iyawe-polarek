@@ -44,11 +44,9 @@ async function registrationHandler() {
                         durable: true
                     })
 
-                    channel.publish(exchange, '*.register', Buffer.from(JSON.stringify(msg)))
+                    channel.publish(exchange, `${travel_id}.register`, Buffer.from(JSON.stringify(msg)))
                     console.log(`sent: ${JSON.stringify(msg)} `)
 
-                    channel.publish(exchange, 'traffic.route', Buffer.from(JSON.stringify(msg)))
-                    console.log(`sent: ${JSON.stringify(msg)}  `)
 
                 }
             })

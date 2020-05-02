@@ -28,8 +28,11 @@ function checkWeather() {
         throw error1;
       }
 
-      let exchange = "fddw";
-      let topic = "weather.update";
+      let queue = "weather_fetch_jobs";
+
+      channel.assertQueue(queue, {
+        durable: true
+      });
 
       dbo
         .collection("entries")
@@ -39,7 +42,7 @@ function checkWeather() {
             let msg = { id: elem.id, destination: elem.destination };
             console.log(msg);
             msg = JSON.stringify(msg);
-            channel.publish(exchange, topic, Buffer.from(msg));
+            channel.sendToQueue(queue, Buffer.from(msg));
           });
         });
     });

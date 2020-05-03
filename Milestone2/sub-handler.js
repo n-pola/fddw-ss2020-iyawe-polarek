@@ -56,7 +56,7 @@ function startSub() {
           let id = key.split(".")[0];
           let dbObj = {
             id: id,
-            service: {}
+            service: []
           };
           dbo.collection("entries").insertOne(dbObj, function (err, res) {});
           channel.ack(msg);
@@ -92,14 +92,14 @@ function startSub() {
                     (element) => element.serviceName == service
                   );
                   if (findService != undefined) {
-                    let findAdress = findService.subscribtions.find(
+                    let findAdress = findService.subscriptions.find(
                       (el) => el.adress == adress
                     );
                     console.log(findAdress);
                     if (findAdress != undefined) {
                       findAdress.topics = topics;
                     } else {
-                      findService.subscribtions.push({
+                      findService.subscriptions.push({
                         adress: adress,
                         topics: topics
                       });
@@ -107,7 +107,7 @@ function startSub() {
                   } else {
                     let newService = {
                       serviceName: service,
-                      subscribtions: [{ adress: adress, topics: topics }]
+                      subscriptions: [{ adress: adress, topics: topics }]
                     };
                     result.service.push(newService);
                   }

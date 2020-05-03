@@ -79,7 +79,6 @@ const check = async function (dbo, channel, id) {
       dbo
         .collection("entries")
         .findOne({ id: id }, async function (err, result) {
-          var test = result;
           await asyncForEach(result.cars, async function (elem, index, array) {
             var getTraffic = await fetchTraffic(
               elem.start,
@@ -94,8 +93,7 @@ const check = async function (dbo, channel, id) {
                 oldDuration: elem.data.duration
               };
               result.cars[index].data = getTraffic;
-              test.cars[index].data = getTraffic;
-              let topic = result.id + ".traffic." + index++;
+              let topic = result.id + ".traffic." + elem.carID;
               channel.publish(
                 "combine_select",
                 topic,

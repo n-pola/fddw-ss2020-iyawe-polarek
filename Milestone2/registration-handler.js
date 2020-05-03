@@ -58,7 +58,7 @@ async function registrationHandler() {
               id: travel_id,
               destination: msgJSON.destination,
               startDate: msgJSON.start_date,
-              endDate: msgJSON.endDate
+              endDate: msgJSON.end_date
             };
 
             channel.publish(

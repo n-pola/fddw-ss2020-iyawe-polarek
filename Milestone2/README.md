@@ -1,4 +1,4 @@
-# Installtion
+# Installation
 
 * in diesem Ordner `npm install` ausführen
 * eine Datei mit dem Namen `.env` anlegen, welche folgende Infomationen enthält:

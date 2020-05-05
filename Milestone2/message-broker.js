@@ -109,5 +109,5 @@ function sToTime(duration) {
   hours = hours < 10 ? "0" + hours : hours;
   minutes = minutes < 10 ? "0" + minutes : minutes;
 
-  return hours + " Stunden und  " + minutes + " Minuten";
+  return hours + " hours and  " + minutes + " minutes";
 }

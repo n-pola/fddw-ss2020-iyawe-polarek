@@ -67,9 +67,11 @@ async function registrationHandler() {
               Buffer.from(JSON.stringify(msg))
             );
 
+            let textMsg = `Your travel-group has been created and has the ID ${msg.id}! ✔`;
+
             channel.sendToQueue(
               message.properties.replyTo,
-              Buffer.from(JSON.stringify(msg))
+              Buffer.from(textMsg)
             );
 
             let topic = travel_id + ".sub";

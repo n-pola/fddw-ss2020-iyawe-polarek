@@ -2,7 +2,8 @@ require("dotenv").config();
 const TelegramBot = require("node-telegram-bot-api");
 const Joi = require("joi");
 const amqp = require("amqplib/callback_api");
-
+const sToTime = require("./lib/sToTime")
+const weatherFormatter = require("./lib/weatherFormatter")
 const MongoClient = require("mongodb").MongoClient;
 var dbo;
 
@@ -268,4 +269,58 @@ function startBot() {
       { noAck: false }
     );
   });
+
+  bot.onText(/\/info (.+)/, (msg, match) => {
+    const chatId = msg.chat.id;
+    console.log(chatId);
+    match = match[1].split(" ");
+    let id = match[0];
+    var idtoInt = parseInt(id)
+    console.log(`match : ${id}`)
+
+    amqpConnection.createChannel((error1, channel) => {
+      if (error1) {
+        throw error1;
+      }
+
+      let exchange = "fddw-endpoint";
+
+      channel.assertExchange(exchange, "topic", {
+        durable: false
+      });
+      var msgObj = {
+        service: "telegram",
+        adress: chatId,
+        id: idtoInt
+      }
+      channel.prefetch(1);
+
+      channel.assertQueue(
+        "",
+        {
+          exclusive: true
+        }, function (error2, q) {
+          if (error2) throw error2;
+
+          var msg = JSON.stringify(msgObj);
+
+          channel.consume(
+            q.queue,
+            function (msg) {
+              bot.sendMessage(chatId, msg.content.toString());
+              channel.ack(msg);
+              channel.deleteQueue(q.queue);
+              channel.close();
+            },
+            {
+              noAck: false
+            }
+          );
+
+          channel.publish("fddw-endpoint", id + ".info", Buffer.from(msg), {
+            replyTo: q.queue
+          })
+        })
+    })
+  })
 }

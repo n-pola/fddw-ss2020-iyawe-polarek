@@ -39,7 +39,9 @@ function startBot() {
     const schema = {
       destination: Joi.string().min(3).max(50).required(),
       start_date: Joi.date(),
-      end_date: Joi.date()
+      end_date: Joi.date(),
+      adress: Joi.number(),
+      service: Joi.string()
     };
 
     return Joi.validate(registration, schema);
@@ -55,7 +57,9 @@ function startBot() {
     const registration = {
       destination: match[0],
       start_date: match[1],
-      end_date: match[2]
+      end_date: match[2],
+      adress: chatId,
+      service: "telegram"
     };
 
     const { error } = validateRegistration(registration);

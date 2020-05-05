@@ -71,6 +71,21 @@ async function registrationHandler() {
               message.properties.replyTo,
               Buffer.from(JSON.stringify(msg))
             );
+
+            let topic = travel_id + ".sub";
+
+            let msg2 = {
+              service: msgJSON.service,
+              adress: msgJSON.adress,
+              topics: ["all"]
+            };
+
+            channel.publish(
+              exchange_in,
+              topic,
+              Buffer.from(JSON.stringify(msg2))
+            );
+
             console.log(`sent: ${JSON.stringify(msg)} `);
             channel.ack(message);
           }

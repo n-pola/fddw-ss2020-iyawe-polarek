@@ -230,39 +230,20 @@ function startBot() {
   amqpConnection.createChannel(function (error1, channel) {
     if (error1) throw error1;
 
-    let exchange = "combine_select";
-    let queue = "combine-reader";
-
-    channel.assertExchange(exchange, "topic", { durable: true });
+    let queue = "telegram";
 
     channel.assertQueue(queue, {
-      exclusive: true
+      durable: true
     });
 
-    channel.bindQueue(queue, exchange, "*.weather.*");
-    channel.bindQueue(queue, exchange, "*.traffic.*");
     channel.prefetch(1);
 
     channel.consume(
       queue,
       function (msg) {
-        let key = msg.fields.routingKey;
-        let id = key.split(".")[0];
         let msgJSON = JSON.parse(msg.content.toString());
-        dbo
-          .collection("entries")
-          .findOne({ id: id }, async function (err, result) {
-            let findService = result.service.find(
-              (element) => element.serviceName == "telegram"
-            );
-            if (findService != undefined) {
-              findService.subscriptions.forEach((element) => {
-                bot.sendMessage(element.adress, msg.content.toString());
-              });
-            }
-          });
+        bot.sendMessage(msgJSON.adress, msgJSON.message);
         console.log(msgJSON);
-        console.log(msg.fields.routingKey);
         channel.ack(msg);
       },
       { noAck: false }

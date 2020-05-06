@@ -37,12 +37,7 @@ async function getInfo() {
                     var foramtedMsg = ""
 
                     if (res != null) {
-                        foramtedMsg = `Trip to ${res.destination} from the ${res.startDate} to ${res.endDate}.\n
-                        Weather forecast:\n ${weatherFormatter(res)} \n
-                        Traffic: \n ${carCounter(res)} \n
-                        Possible Topic for this Group: \n all \n weather \n ${topicLister(res)}
-                        Have a nice trip!🛬
-                        `
+                        foramtedMsg = `Trip to ${res.destination} from the ${res.startDate} to ${res.endDate}.\n\nWeather forecast:\n${weatherFormatter(res)} \nTraffic: \n${carCounter(res)}\nPossible Topic for this Group:\nall\nweather\ntraffic\n${topicLister(res)}\n\nHave a nice trip!🛬`
                         channel.sendToQueue(msg.properties.replyTo, Buffer.from(foramtedMsg))
                     }
                     else {

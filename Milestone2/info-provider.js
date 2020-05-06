@@ -1,7 +1,7 @@
 require("dotenv").config();
 const amqp = require("amqplib/callback_api");
-const sToTime = require("./lib/sToTime")
 const weatherFormatter = require("./lib/weatherFormatter")
+const carCounter = require("./lib/carCounter")
 const MongoClient = require("mongodb").MongoClient;
 var dbo;
 
@@ -39,11 +39,13 @@ async function getInfo() {
 
                 dbo.collection("travels").findOne({ id: id }, (err, res) => {
                     if (err) throw err;
+
                     var msgJSONa = ""
+
                     if (res != null) {
                         msgJSONa = `Trip to ${res.destination} from the ${res.startDate} to ${res.endDate}.\n
                         Weather forecast:\n ${weatherFormatter(res)} \n
-                        Traffic: ${sToTime(res.traffic[0].duration)}. \n
+                        Traffic: \n ${carCounter(res)} \n
                         Possible Topic for this Group: \n all, weather, traffic, traffic.1, traffic.2.
                         Have a nice trip!🛬
                         `
@@ -54,28 +56,11 @@ async function getInfo() {
                         msgJSONa = "Seems like this group doesn't exsist..🤔"
                         channel.sendToQueue(msg.properties.replyTo, Buffer.from(msgJSONa))
                     }
-
                 })
                 channel.ack(msg)
-
             }, {
                 noAck: false
             })
-
-
-
-            //channel.sendToQueue(queue, Buffer.from(msgJSONa), { replyTo: q.queue })
-
         })
-
-        /**
-         *  var msgJSONa = `Trip to ${res.destination} from the ${res.startDate} to ${res.endDate}.\n
-                   Weather forecast: ${weatherFormatter(res)} \n
-                   Traffic: ${sToTime(res.traffic[0].duration)}. \n
-                   Possible Topic for this Group: \t all, weather, traffic, traffic.1, traffic.2.
-                   Have a nice trip!
-                   `
-         *  */
-        // channel.sendToQueue(queue, Buffer.from(msgJSON), { replyTo: q.queue })
     })
 }

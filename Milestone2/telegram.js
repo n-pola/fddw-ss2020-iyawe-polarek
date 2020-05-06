@@ -2,8 +2,7 @@ require("dotenv").config();
 const TelegramBot = require("node-telegram-bot-api");
 const Joi = require("joi");
 const amqp = require("amqplib/callback_api");
-const sToTime = require("./lib/sToTime")
-const weatherFormatter = require("./lib/weatherFormatter")
+
 const MongoClient = require("mongodb").MongoClient;
 var dbo;
 

@@ -9,6 +9,7 @@
   * `HERE_KEY=""` einen HERE API Key
   * `MONGO_BASE=""` URL zu einem MongoDB Server
   * `TELEGRAM=""`der Telegram Bot token
+  * `DISCORD=""`der Discord Bot Token
 * Daraufhin können alle Service nach einander gestartet werden und das System ist z.B. über den Telegram Bot [t.me/fddw_bot](t.me/fddw_bot) zu erreichen
 
 # Befehle

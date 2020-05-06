@@ -23,7 +23,6 @@ function connectAMQP() {
 
 function startBot() {
   client.on("message", (message) => {
-    console.log(message);
     if (!message.author.bot && message.channel.type == "dm") {
       var msg = message.content.split(" ");
       if (msg[0] == "/register") {

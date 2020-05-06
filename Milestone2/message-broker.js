@@ -52,17 +52,21 @@ function sender() {
             if (msgJSON.oldDuration == null) {
               outMsg = `🚗 The duration for car ${subType} is ${sToTime(
                 msgJSON.newDuration
-              )}`;
+              )} \nPassengers: ${msgJSON.passengers}`;
             } else if (msgJSON.newDuration > msgJSON.oldDuration) {
               let diff = sToTime(msgJSON.newDuration - msgJSON.oldDuration);
               outMsg = `🚗 The new duration for car ${subType} is ${sToTime(
                 msgJSON.newDuration
-              )}, that is ${diff} slower than you old time}`;
+              )}, that is ${diff} slower than you old time \nPassengers: ${
+                msgJSON.passengers
+              }`;
             } else {
               let diff = sToTime(msgJSON.oldDuration - msgJSON.newDuration);
               outMsg = `🚗 The new duration for car ${subType} is ${sToTime(
                 msgJSON.newDuration
-              )}, that is ${diff} faster than you old time`;
+              )}, that is ${diff} faster than you old time \nPassengers: ${
+                msgJSON.passengers
+              }`;
             }
           } else if (type == "weather") {
             outMsg = "New Forecast! 🌤 \n";

@@ -49,7 +49,11 @@ function sender() {
           var outMsg;
 
           if (type == "traffic") {
-            if (msgJSON.newDuration > msgJSON.oldDuration) {
+            if (msgJSON.oldDuration == null) {
+              outMsg = `🚗 The duration for car ${subType} is ${sToTime(
+                msgJSON.newDuration
+              )}`;
+            } else if (msgJSON.newDuration > msgJSON.oldDuration) {
               let diff = sToTime(msgJSON.newDuration - msgJSON.oldDuration);
               outMsg = `🚗 The new duration for car ${subType} is ${sToTime(
                 msgJSON.newDuration

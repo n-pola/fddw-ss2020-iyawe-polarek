@@ -83,7 +83,7 @@ function startReceive() {
                         channel.sendToQueue(
                           msg.properties.replyTo,
                           Buffer.from(
-                            `Added a new Car to your Group ${id} \n The cars ID ${carID} \n\n You can subscribe to it with "traffic.${carID}" or "traffic" if you want all cars 🏎`
+                            `Added a new Car to your Group ${id} \n The cars ID is ${carID} \n\n You can subscribe to it with "traffic.${carID}" or "traffic" if you want all cars 🏎`
                           )
                         );
                         channel.ack(msg);

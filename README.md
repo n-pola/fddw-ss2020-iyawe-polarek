@@ -5,6 +5,7 @@
 * Alle Informationen sind im [Wiki](https://github.com/n-pola/fddw-ss2020-iyawe-polarek/wiki) zu finden
 * Das Projekt ist im Ordner `./Milestone 2` zu finden
 * ❗ Wir haben unsere Branches mit squash in die Master Branch gemered, somit ist nur ein Commit je Branch zu finden. Die kompletten Commits sind jeweils in den geschlossenen PRs zu finden ❗
+* Ziele/Aufgaben befinden sich im [Projekt Board](https://github.com/n-pola/fddw-ss2020-iyawe-polarek/projects/2)
 ### Problemszenario:
 
 Nina und Paul gehören einer weit verzweigten Familie an, die jedes Jahr über das Himmelfahrtswochenende einen gemeinsamen Kurzurlaub auf einer Berghütte in den Schweizer Alpen verbringen. Diue Koordination gestaltet sich äusserst schwierig und ist ineffektiv:

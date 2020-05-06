@@ -90,7 +90,8 @@ const check = async function (dbo, channel, id) {
               let msg = {
                 id: id,
                 newDuration: getTraffic.duration,
-                oldDuration: elem.data.duration
+                oldDuration: elem.data.duration,
+                passengers: elem.passengers
               };
               result.cars[index].data = getTraffic;
               let topic = result.id + ".traffic." + elem.carID;

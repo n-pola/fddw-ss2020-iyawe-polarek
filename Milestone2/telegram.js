@@ -256,7 +256,6 @@ function startBot() {
     match = match[1].split(" ");
     let id = match[0];
     var idtoInt = parseInt(id)
-    console.log(`match : ${id}`)
 
     amqpConnection.createChannel((error1, channel) => {
       if (error1) {

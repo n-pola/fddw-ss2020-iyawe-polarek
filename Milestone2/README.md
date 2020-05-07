@@ -24,7 +24,8 @@
   * `GroupID` ist die ID der gemeinsamen Reisgruppe
 * ### `/info GroupID` Erhalte alle aktuellen Daten einer Gruppe (einmalig)
   * `GroupID` ist die ID der gemeinsamen Reisgruppe
-* ### `add GroupID StartOrt Insassen` Erstellt ein route für ein Auto inklusive Insassen
+* ### `/add GroupID type StartOrt Insassen` Erstellt ein route für ein Auto inklusive Insassen
   * `GroupID` ist die ID der gemeinsamen Gruppe
+  * `Type` momentan nur Car später dann zb Train oder Plane
   * `StarOrt` ein Ort von dem aus der Teil der Gruppe startet (z.b. "Berlin")
   * `Insassen` eine Liste von String getrennt durch Leerzeichen, um Autos voneinander unterscheiden zu können und zb nur einem bestimmten Auto zu folgen

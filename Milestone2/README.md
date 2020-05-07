@@ -17,11 +17,9 @@
   * `ZielOrt` ist ein String der den Zielort der gesamten Reisgruppe angibt (jeder hat das gleiche Ziel)
   * `StartDatum` gibt den Start der Reise an, im format (yyyy-mm-dd)
   * `EndDatum` gibt das Ende der Reise an, im format (yyyy-mm-dd)
-* ### `/sub GroupID Topics` Einer Reisegruppe "folgen"
+* ### `/sub GroupID Topics` Einer Reisegruppe "folgen" / updaten
   * `GroupID` ist die ID der gemeinsamen Reisgruppe
   * `Topics` kann eine Liste von mehrern Topics sein, wie zum Beispiel weather, traffic, traffic.6 oder all
-* ### `/unsub GroupID` Einer Reisegruppe "entfolgen"
-  * `GroupID` ist die ID der gemeinsamen Reisgruppe
 * ### `/info GroupID` Erhalte alle aktuellen Daten einer Gruppe (einmalig)
   * `GroupID` ist die ID der gemeinsamen Reisgruppe
 * ### `/add GroupID type StartOrt Insassen` Erstellt ein route für ein Auto inklusive Insassen

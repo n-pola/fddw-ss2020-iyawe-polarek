@@ -9,7 +9,7 @@ function newEntrie(id) {
 }
 
 amqp.connect(
-  "amqp://dtnuecqi:gGpHnyj_8HKgJC_w2okKeZZJmXxkEnsn@bee.rmq.cloudamqp.com/dtnuecqi",
+  "",
   function (error0, connection) {
     if (error0) {
       throw error0;

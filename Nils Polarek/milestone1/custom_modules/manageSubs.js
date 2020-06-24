@@ -11,7 +11,7 @@ function getLocation(locationName) {
         .get(
           "/geocode?q=" +
             locationName +
-            "&apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg"
+            "&apikey="
         )
         .then(function (response) {
           resolve(response.data);

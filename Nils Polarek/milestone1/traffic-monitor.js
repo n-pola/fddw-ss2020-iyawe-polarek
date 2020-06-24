@@ -7,7 +7,7 @@ const route = axios.create({
 });
 
 amqp.connect(
-  "amqp://dtnuecqi:gGpHnyj_8HKgJC_w2okKeZZJmXxkEnsn@bee.rmq.cloudamqp.com/dtnuecqi",
+  "",
   async function (error0, connection) {
     if (error0) {
       throw error0;
@@ -107,7 +107,7 @@ async function getRoute({ type, id, start, destination }) {
             destination.lat +
             "," +
             destination.lng +
-            "&return=summary&apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg"
+            "&return=summary&apikey="
         )
         .then(function (response) {
           let trafficEntries = fs.readFileSync("./data/traffic.json", "utf8");
@@ -141,7 +141,7 @@ async function getRouteInterval(id, start, destination) {
             destination.lat +
             "," +
             destination.lng +
-            "&return=summary&apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg"
+            "&return=summary&apikey="
         )
         .then(function (response) {
           resolve({ id: id, data: response.data });

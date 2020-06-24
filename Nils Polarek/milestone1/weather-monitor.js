@@ -14,7 +14,7 @@ weatherMonitor();
 
 async function weatherMonitor() {
   amqp.connect(
-    "amqp://dtnuecqi:gGpHnyj_8HKgJC_w2okKeZZJmXxkEnsn@bee.rmq.cloudamqp.com/dtnuecqi",
+    "",
     function (error0, connection) {
       if (error0) {
         throw error0;
@@ -120,7 +120,7 @@ async function getForecast(destination, id) {
     try {
       var forecast = await weather
         .get(
-          "report.json?apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg&product=forecast_7days_simple&latitude=" +
+          "report.json?apikey=&product=forecast_7days_simple&latitude=" +
             destination.lat +
             "&longitude=" +
             destination.lng +
@@ -163,7 +163,7 @@ async function getForecastInterval(destination, id) {
     try {
       var forecast = await weather
         .get(
-          "report.json?apikey=MSH7DDlqeAqt2lrAr2MjBl62GR5bDxNrEbO8UiecDBg&product=forecast_7days_simple&latitude=" +
+          "report.json?apikey=&product=forecast_7days_simple&latitude=" +
             destination.lat +
             "&longitude=" +
             destination.lng +

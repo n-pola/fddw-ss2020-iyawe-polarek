@@ -3,7 +3,7 @@ const fetch = require('node-fetch')
 
 
 async function getWeather() {
-    const api_link = `http://api.weatherstack.com/current?access_key=f5fdb6e64114a075186fb69bb8f47072&query=Cologne,`
+    const api_link = `http://api.weatherstack.com/current?access_key=&query=Cologne,`
     try {
         const res = await fetch(api_link)
         const response =  await res.json()

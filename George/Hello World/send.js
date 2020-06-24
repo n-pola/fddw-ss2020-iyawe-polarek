@@ -1,7 +1,7 @@
 const amqp = require("amqplib/callback_api");
 
 amqp.connect(
-  "amqp://fbrlocve:Gx1Xw4JnnDyGo-ZfYLhDymDM9_tZWAtL@kangaroo.rmq.cloudamqp.com/fbrlocve",
+  "",
   function(error0, connection) {
     if (error0) {
       throw error0;

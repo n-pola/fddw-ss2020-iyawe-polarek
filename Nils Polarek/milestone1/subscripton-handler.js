@@ -2,7 +2,7 @@ var amqp = require("amqplib/callback_api");
 const subs = require("./custom_modules/manageSubs.js");
 
 amqp.connect(
-  "amqp://dtnuecqi:gGpHnyj_8HKgJC_w2okKeZZJmXxkEnsn@bee.rmq.cloudamqp.com/dtnuecqi",
+  "",
   async function (error0, connection) {
     if (error0) {
       throw error0;
